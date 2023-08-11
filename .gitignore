@@ -42,6 +42,7 @@ vignettes/*.pdf
 *.html
 *.pdf
 *.csv
+*.png
 
 #run code to produce results
 simulations/clearly_linear/results/*
