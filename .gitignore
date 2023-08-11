@@ -39,7 +39,9 @@ vignettes/*.pdf
 .Renviron
 
 #no analysis materials
-doc/*
+*.html
+*.pdf
+*.csv
 
 #run code to produce results
 simulations/clearly_linear/results/*
