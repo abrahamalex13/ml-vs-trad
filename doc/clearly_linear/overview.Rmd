@@ -1,0 +1,339 @@
+---
+title: "Classical Statistics versus Machine Learning"
+subtitle: "Tests of Linear Model Approaches"
+author: "Alex Abraham"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+---
+
+<style>
+
+.remark-slide-content > h1 {   font-size: 45px ; }
+
+</style>
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, dpi = 100, fig.showtext = TRUE)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_light(base_color = "#23395b")
+
+library(tidyverse)
+library(kableExtra)
+```
+
+```{r}
+path_home <- "C:/Users/Alex/Documents/startup/ml-vs-trad/simulations/var_selection_true_model_linear_small/"
+path_results <- paste(path_home, "results/", sep = "")
+
+source("C:/Users/Alex/Documents/startup/ml-vs-trad/doc/var_selection_true_model_linear_small/presentation_objects.R")
+
+```
+
+
+
+# What is a Linear Model?
+
+- "Line of best fit" (`r model_essence`)
+
+```{r fig.width = 10, fig.height = 5}
+  p_ex1
+```
+
+- Extend the idea to estimate _y_ as a function of multiple predictors
+
+
+
+---
+
+# Linear Model Philosophy
+
+- Philosophy: there's a _true_ line of best fit between _x_ and _y_
+
+```{r fig.width = 10, fig.height = 4.5, dpi = 150}
+  p_ex1_true
+```
+
+- In reality, we can't know that _true_ line because other factors 
+vary randomly, adding random noise to _y_
+
+- Goal: _estimate_ the line of best fit, and quantify the estimate's uncertainty
+
+
+
+---
+
+# Linear Model Varieties
+
+Multiple techniques for linear model **estimation**:
+
+- Classical statistics
+  - `r model_essence`
+  - Typical goal: test whether a relationship between _x_ and _y_ truly exists
+
+- Machine learning
+  - `r model_essence` _plus_ a measure of model flexibility
+  - Typical goal: in an automated way, sift through many potential predictors of _y_
+  
+  
+---
+
+# How Linear Model Varieties Differ
+
+Numerical properties differ by estimation technique.
+
+- Classical statistics
+  - Well-defined calculation
+      - One formula to compute any best-fit line
+  - Well-defined estimation behavior (under key assumptions)
+      - Expectation: model accuracy improves as more data are available
+      - Quantify, how precisely the _estimated_ line reflects the _true_ line
+
+- Machine learning
+  - Flexible calculation
+      - Multiple ways of minimizing prediction errors _plus_ model flexibility
+  - Less certain estimation behavior
+      - Expectation: model accuracy improves as more data are available
+
+
+---
+
+
+# Choosing a Linear Model Variety?
+
+- Define objective(s):
+    - Understand a relationship between _x_ and _y_ with quantifiable precision?
+    - Seek any and all potentially predictive patterns?
+    
+- Note characteristics of the available data:
+    <!-- - How did the information come to be?  -->
+    <!--     - Controlled experiment? -->
+    <!--     - Passive observation? -->
+    - How many events/outcomes are observed?
+
+    
+---
+
+# Linear Model Experimentation 
+### Why experiment?
+
+Analog: in a carefully controlled environment,
+we can observe how a prospective medicine behaves.
+
+In a carefully controlled environment,
+we can observe how ML and classical linear models behave. 
+
+Experiments - which are _replicable_ numerical simulations -
+may be stylized as case studies.
+
+---
+
+# Linear Model Experimentation
+### A real project is like one trial in an experiment
+
+```{r}
+
+  tbl_real_proj_exp_trial %>% 
+    kable(., format="markdown")
+
+```
+
+**Step 1** Called 'training data' because it's used to 'train' a model
+
+**Step 3** How well does _x_ predict _y_, in
+- training data?
+- new, never-before-seen 'test data'?
+
+
+
+---
+
+# Linear Model Experimentation
+### One trial, two separate datasets
+  
+- Training data
+    - Information from which the models learn
+    - Predictions on these data benefit from hindsight
+    
+- Test data
+    - Not available for the models to learn from 
+    - Predictions on these data are true forecasts
+
+```{r fig.width = 5}
+   knitr::include_graphics("graphic_train_test_split.png")
+```
+
+Graphic inspired by _Elements of Statistical Learning_ (222).
+
+
+---
+
+# Linear Model Experimentation
+### Repeat trials
+
+Repeat many such trials, to average out results due to random chance.
+What exactly changes trial-to-trial?
+- Noise that muddies _y_ in the training data
+- Test data (both _x_ and _y_) 
+
+
+---
+
+# Case: Few True Predictors
+
+Proceed to a replicable simulation.
+
+- A production facility's hourly output depends on four factors:
+  - Indoor temperature
+  - Laborers' average wage
+  - Laborers' average hours of sleep the night before
+  - Foreman's average wage
+  
+- 50 potential predictors recorded, but no others truly predict output
+
+- 1,000 data points available for model estimation
+
+- Business question: which linear model variety yields better predictions?
+  - Classical statistics, incorporating industry expertise about which predictors matter
+  - Machine learning, preferring computational power over industry expertise
+
+
+---
+
+# Case: Few True Predictors
+### (Step 1) Training Data
+
+```{r echo = FALSE, fig.width = 10, fig.height = 5, dpi=175}
+
+  p_dummy_data
+
+```
+
+
+---
+
+# Case: Few True Predictors
+### (Step 2) Estimate models
+
+Approaches:
+
+- Classical statistics, incorporating industry expertise about which predictors matter
+  - Use only those four predictors in line with industry expertise
+  
+- Machine learning, preferring computational power over industry expertise
+  - "Elastic Net" algorithm may choose any of the 50 potential predictors to enter a model
+      - Hybrid of different linear machine learning methods
+      - For reference: _Regularization and variable selection via the elastic net_, Zou and Hastie (2004)
+  - "Cross-validation" optimization approach
+
+
+---
+
+# Case: Few True Predictors
+### (Step 3) Evaluate estimated models
+
+- How to succinctly summarize a model's series of prediction errors?
+  - One popular metric, _sum of squared errors (SSE)_: 
+      1. Square each individual error
+      2. Sum
+    - Note, penalty rises as a prediction error moves farther from zero.
+    
+- In each of 1,000 trials, compare error summaries of ML, classical statistics 
+
+---
+
+# Case: Few True Predictors
+### (Step 3) Assess models' predictions on training data
+
+- **Note**, estimated models were taught by these data
+
+```{r, fig.width = 10, fig.height = 4, dpi = 175}
+  p_results_training_pred
+```
+
+
+---
+
+# Case: Few True Predictors
+### (Step 3) Assess models' predictions on training data
+
+```{r echo = FALSE}
+  
+  tab_results_training_pred %>% 
+    kable(caption = "Count Trials by Best Predictive Linear Model")
+
+```
+
+On look-back at the data which taught the estimated models, 
+ML makes better predictions than classical statistics. 
+
+---
+
+# Case: Few True Predictors
+### (Step 3) Assess models' predictions on test data
+
+- **Note**, estimated models have never seen these data before
+
+```{r, fig.width = 10, fig.height = 4.5, dpi = 175}
+  p_results_test_pred
+```
+
+---
+
+# Case: Few True Predictors
+### (Step 3) Assess models' predictions on test data
+
+```{r echo = FALSE}
+
+  tab_results_test_pred %>% 
+    kable(caption = "Count Trials by Best Predictive Linear Model")
+
+```
+
+Taking models to never-before-seen test data,
+classical statistics makes better predictions than ML.
+
+---
+
+# Case: Few True Predictors
+### Extension - More Data Points
+
+Any change on increase to 10,000 training data points, from 1,000?
+
+```{r echo = FALSE}
+  
+  tab_results_training_pred %>% 
+    kable(caption = "Count Trials by Best Predictive Linear Model")
+
+```
+
+```{r echo = FALSE}
+  
+  tab_results_test_pred %>% 
+    kable(caption = "Count Trials by Best Predictive Linear Model")
+
+```
+
+Same takeaway as previously. Likely need more data points, still.
+
+---
+
+# Case: Few True Predictors
+### Lessons
+
+- Measure a statistical model's predictive power
+using test data it hasn't already learned from
+  - On a day in July 2020, a political pundit can explain a historical election outcome - 
+  but can he/she forecast the upcoming November result?
+
+- ML has heightened sensitivity to random chance patterns
+that don't hold in new future data
+  - Future investigations: alternatives to 'cross-validation'
+
+- When _y_ is truly a linear function of suspected _x_, 
+classical statistics is more fit for the prediction task

@@ -1,0 +1,28 @@
+---
+title: "TITLE"
+subtitle: "SUB"
+author: "Alex Abraham"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+---
+
+<style>
+
+.remark-slide-content > h1 {   font-size: 45px ; }
+
+</style>
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, dpi = 100, fig.showtext = TRUE)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_light(base_color = "#23395b")
+
+library(tidyverse)
+library(kableExtra)
+```
